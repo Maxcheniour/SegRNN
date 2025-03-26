@@ -3,6 +3,8 @@ from exp.exp_basic import Exp_Basic
 from models import Informer, Autoformer, Transformer, DLinear, Linear, NLinear, PatchTST, VanillaRNN, SegRNN
 from utils.tools import EarlyStopping, adjust_learning_rate, visual, test_params_flop
 from utils.metrics import metric
+from sklearn.preprocessing import StandardScaler
+
 
 import numpy as np
 import torch
@@ -284,14 +286,17 @@ class Exp_Main(Exp_Basic):
                 outputs = outputs.detach().cpu().numpy()
                 batch_y = batch_y.detach().cpu().numpy()
 
-                pred = outputs  # outputs.detach().cpu().numpy()  # .squeeze()
-                true = batch_y  # batch_y.detach().cpu().numpy()  # .squeeze()
+                #pred = outputs  # outputs.detach().cpu().numpy()  # .squeeze()
+                #true = batch_y  # batch_y.detach().cpu().numpy()  # .squeeze()
 
+                pred = test_data.inverse_transform(outputs.reshape(-1, outputs.shape[-1])).reshape(outputs.shape)
+                true = test_data.inverse_transform(batch_y.reshape(-1, batch_y.shape[-1])).reshape(batch_y.shape)
                 preds.append(pred)
                 trues.append(true)
                 inputx.append(batch_x.detach().cpu().numpy())
                 if i % 20 == 0:
                     input = batch_x.detach().cpu().numpy()
+                    input = test_data.inverse_transform(input.reshape(-1, input.shape[-1])).reshape(input.shape)
                     gt = np.concatenate((input[0, :, -1], true[0, :, -1]), axis=0)
                     pd = np.concatenate((input[0, :, -1], pred[0, :, -1]), axis=0)
                     visual(gt, pd, os.path.join(folder_path, str(i) + '.pdf'))
