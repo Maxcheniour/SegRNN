@@ -288,15 +288,33 @@ class Exp_Main(Exp_Basic):
 
                 #pred = outputs  # outputs.detach().cpu().numpy()  # .squeeze()
                 #true = batch_y  # batch_y.detach().cpu().numpy()  # .squeeze()
+                '''
+                if i % 10 == 0:
+                    input = batch_x.detach().cpu().numpy()
+                    pred = outputs  # .squeeze()
+                    true = batch_y  # .squeeze()
 
-                pred = test_data.inverse_transform(outputs.reshape(-1, outputs.shape[-1])).reshape(outputs.shape)
-                true = test_data.inverse_transform(batch_y.reshape(-1, batch_y.shape[-1])).reshape(batch_y.shape)
+                    for j in range(min(20, true.shape[2])):  # nombre de cibles
+                        gt = np.concatenate((input[0, :, j], true[0, :, j]), axis=0)
+                        pd = np.concatenate((input[0, :, j], pred[0, :, j]), axis=0)
+                        visual(gt, pd, os.path.join(folder_path, f"{i}_target{j}_normalised.pdf"))  
+                '''
+                pred = outputs  # outputs.detach().cpu().numpy()  # .squeeze()
+                true = batch_y
                 preds.append(pred)
                 trues.append(true)
+                pred = test_data.inverse_transform(outputs.reshape(-1, outputs.shape[-1])).reshape(outputs.shape)
+                true = test_data.inverse_transform(batch_y.reshape(-1, batch_y.shape[-1])).reshape(batch_y.shape)
                 inputx.append(batch_x.detach().cpu().numpy())
-                if i % 20 == 0:
+                if i % 10 == 0:
                     input = batch_x.detach().cpu().numpy()
                     input = test_data.inverse_transform(input.reshape(-1, input.shape[-1])).reshape(input.shape)
+                    '''
+                    for j in range(min(1, true.shape[2])):  # nombre de cibles
+                        gt = np.concatenate((input[0, :, -j], true[0, :, -j]), axis=0)
+                        pd = np.concatenate((input[0, :, -j], pred[0, :, -j]), axis=0)
+                        visual(gt, pd, os.path.join(folder_path, f"{i}_target{j}.pdf"))
+                    '''
                     gt = np.concatenate((input[0, :, -1], true[0, :, -1]), axis=0)
                     pd = np.concatenate((input[0, :, -1], pred[0, :, -1]), axis=0)
                     visual(gt, pd, os.path.join(folder_path, str(i) + '.pdf'))

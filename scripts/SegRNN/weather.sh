@@ -10,11 +10,11 @@ fi
 model_name=SegRNN
 
 root_path_name=./dataset/
-data_path_name=weather.csv
+data_path_name=weather_origin.csv
 model_id_name=weather
 data_name=custom
 
-for pred_len in 96 192 336 720
+for pred_len in 96 192 336
 do
     python -u run_longExp.py \
       --is_training 1 \
@@ -27,11 +27,11 @@ do
       --seq_len 720 \
       --pred_len $pred_len \
       --seg_len 48 \
-      --enc_in 18 \
-      --target 2m_temperature \
+      --enc_in 21 \
       --d_model 512 \
       --dropout 0.5 \
       --train_epochs 30 \
+      --target "Tpot (K)" \
       --patience 10 \
       --rnn_type gru \
       --dec_way pmf \
